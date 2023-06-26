@@ -42,7 +42,7 @@ jobs:
           mkdir -p /etc/gnupg && echo "auto-key-retrieve" >> /etc/gnupg/gpg.conf
       - name: Generate .SRCINFO
         run: |
-          su build bash -c "cd /home/build/${{ matrix.package }} makepkg --printsrcinfo > /home/build/${{ matrix.package }}/.SRCINFO"
+          su build bash -c "cd /home/build/${{ matrix.package }} && makepkg --printsrcinfo > /home/build/${{ matrix.package }}.SRCINFO"
       - name: Install dependencies
         shell: bash
         run: |
