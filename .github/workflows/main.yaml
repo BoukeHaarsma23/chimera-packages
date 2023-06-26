@@ -43,6 +43,7 @@ jobs:
           mkdir -p /etc/gnupg && echo "auto-key-retrieve" >> /etc/gnupg/gpg.conf
           sed -i '/ParallelDownloads/s/^#//g' /etc/pacman.conf
           echo -e "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /etc/pacman.conf
+          echo "Server=https://archive.archlinux.org/repos/$(date -d 'yesterday' +%Y/%m/%d)/\$repo/os/\$arch" > /etc/pacman.d/mirrorlist;
       - name: Update and install git
         run: pacman -Syu --noconfirm git
       - uses: actions/checkout@v3
