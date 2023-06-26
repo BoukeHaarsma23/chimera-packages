@@ -227,7 +227,7 @@ prepare() {
 
 build() {
   cd $_srcname
-  _make all
+  _make -j16 all
 }
 
 _package() {

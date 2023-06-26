@@ -92,7 +92,9 @@ jobs:
         id: version
         run: |
           echo "version=$(echo ${GITHUB_SHA} | cut -c1-7)" >> $GITHUB_OUTPUT
-          cd pkgs/ && ls -d * > /tmp/packages.txt
+          tar -czvf /tmp/packages.tar.gz /tmp/*.pkg.tar.zst
+          cd /tmp
+          ls /tmp/*.pkg.tar.zst > /tmp/packages.txt
       - name: Make release
         uses: softprops/action-gh-release@v1
         with:
@@ -102,5 +104,5 @@ jobs:
           draft: true
           fail_on_unmatched_files: true
           files: |
-            /tmp/*.pkg.tar.zst
+            /tmp/packages.tar.gz
             /tmp/packages.txt
