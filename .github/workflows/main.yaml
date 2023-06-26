@@ -4,6 +4,11 @@ on:
     branches: main
   workflow_dispatch:
 
+env:
+  CFLAGS: "-O2 -march=znver1 -mtune=znver1 -pipe -fno-plt -fexceptions \
+        -Wp,-D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security \
+        -fstack-clash-protection -fcf-protection"
+
 jobs:
   list:
     runs-on: ubuntu-latest
@@ -53,7 +58,7 @@ jobs:
         id: build-package
         shell: bash
         run: |
-          su build bash -c "cd /home/build/${{ matrix.package }} && MAKEFLAGS=-j$(nproc) makepkg"
+          su build bash -c "cd /home/build/${{ matrix.package }} && CFLAGS='${{ env.CFLAGS }}' MAKEFLAGS=-j$(nproc) makepkg"
           . /home/build/${{ matrix.package }}/PKGBUILD
           full_version=${pkgver}-${pkgrel}
           echo $full_version
