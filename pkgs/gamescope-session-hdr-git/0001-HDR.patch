@@ -1,0 +1,30 @@
+diff --git a/usr/share/gamescope-session/gamescope-session-script b/usr/share/gamescope-session/gamescope-session-script
+index 4c30fe0..9fbd7b8 100755
+--- a/usr/share/gamescope-session/gamescope-session-script
++++ b/usr/share/gamescope-session/gamescope-session-script
+@@ -1,5 +1,6 @@
+ #!/bin/bash
+-
++export ENABLE_GAMESCOPE_WSI=1
++export DXVK_HDR=1
+ # Fix intel color corruption
+ # might come with some performance degradation but is better than a corrupted
+ # color image
+@@ -188,6 +189,8 @@ if [ -z "$GAMESCOPECMD" ] ; then
+         --default-touch-mode 4 \
+         --hide-cursor-delay 3000 \
+         --fade-out-duration 200 \
++	--hdr-enabled \
++	--hdr-itm-enable \
+         -R $socket -T $stats"
+      else
+         GAMESCOPECMD="/usr/bin/gamescope \
+@@ -199,6 +202,8 @@ if [ -z "$GAMESCOPECMD" ] ; then
+         --default-touch-mode 4 \
+         --hide-cursor-delay 3000 \
+         --fade-out-duration 200 \
++	--hdr-enabled \
++	--hdr-itm-enable \
+         --prefer-vk-device $VULKAN_ADAPTER \
+         -R $socket -T $stats"
+      fi
