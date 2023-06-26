@@ -13,10 +13,10 @@ jobs:
   list:
     runs-on: ubuntu-latest
     outputs:
-      pkgs: ${{ steps.set-aur-pkgs.outputs.pkgs }}
+      pkgs: ${{ steps.set-pkgs.outputs.pkgs }}
     steps:
       - uses: actions/checkout@v3
-      - id: set-aur-pkgs
+      - id: set-pkgs
         run: |
           echo "pkgs=$(ls -d pkgs/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
         shell: bash
@@ -65,4 +65,30 @@ jobs:
           name: packages
           path: |
             /home/build/${{ matrix.package }}/*.pkg.tar.zst
-  
+          if-no-files-found: error
+
+  make-release:
+    runs-on: ubuntu-latest
+    needs: 
+      - list
+      - build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: packages
+          path: /tmp
+      - uses: actions/checkout@v3
+      - name: Create package list
+        run:
+          cd pkgs/ && ls -d * > /tmp/packages.txt
+      - name: Make release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "linux-chimeraos-${{ needs.build-kernel.outputs.full_version }}"
+          token: ${{ secrets.GITHUB_TOKEN }}
+          draft: true
+          fail_on_unmatched_files: true
+          files: |
+            /tmp/*.pkg.tar.zst
+            /tmp/packages.txt
