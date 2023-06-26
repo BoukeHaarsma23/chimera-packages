@@ -32,7 +32,8 @@ jobs:
       - name: Create build user
         run: |
           useradd -m build
-          cp -vR pkgs/${{ matrix.package }} /home/build/${{ matrix.package }}
+          mkdir -p /home/build/${{ matrix.package }}
+          cp -vR ${{ matrix.package }} /home/build/${{ matrix.package }}
           chown -vR build /home/build/${{ matrix.package }}
       - name: Set up pacman keyring
         run: |
