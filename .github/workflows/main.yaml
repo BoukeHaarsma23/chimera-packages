@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pacman -S --noconfirm $(sed -n -e 's/^[[:space:]]*makedepends\(_x86_64\)\? = \([[:alnum:][:punct:]]*\)[[:space:]]*$/\2/p' /home/build/${{ matrix.package }}/.SRCINFO)
+          pacman -Syu --noconfirm $(sed -n -e 's/^[[:space:]]*makedepends\(_x86_64\)\? = \([[:alnum:][:punct:]]*\)[[:space:]]*$/\2/p' /home/build/${{ matrix.package }}/.SRCINFO)
       - name: Build package
         id: build-package
         shell: bash
