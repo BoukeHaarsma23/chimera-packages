@@ -36,6 +36,15 @@ jobs:
     container: archlinux:base-devel
 
     steps:
+      - name: Set up pacman keyring
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+          mkdir -p /etc/gnupg && echo "auto-key-retrieve" >> /etc/gnupg/gpg.conf
+          sed -i '/ParallelDownloads/s/^#//g' /etc/pacman.conf
+          echo -e "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /etc/pacman.conf
+      - name: Update and install git
+        run: pacman -Syu --noconfirm git
       - uses: actions/checkout@v3
         with:
           submodules: recursive
@@ -45,13 +54,6 @@ jobs:
           mkdir -p /home/build/pkgs
           cp -vR ${{ matrix.package }} /home/build/pkgs
           chown -vR build /home/build/${{ matrix.package }}
-      - name: Set up pacman keyring
-        run: |
-          pacman-key --init
-          pacman-key --populate archlinux
-          mkdir -p /etc/gnupg && echo "auto-key-retrieve" >> /etc/gnupg/gpg.conf
-          sed -i '/ParallelDownloads/s/^#//g' /etc/pacman.conf
-          echo -e "[multilib]\nInclude = /etc/pacman.d/mirrorlist\n" >> /etc/pacman.conf
       - name: Generate .SRCINFO
         run: |
           ls -ahl /home/build/${{ matrix.package }} 
@@ -59,7 +61,7 @@ jobs:
       - name: Install dependencies
         shell: bash
         run: |
-          pacman -Syu --noconfirm $(sed -n -e 's/^[[:space:]]*\(make\)\?depends\(_x86_64\)\? = \([[:alnum:][:punct:]]*\)[[:space:]]*$/\3/p' /home/build/${{ matrix.package }}/.SRCINFO)
+          pacman -S --noconfirm $(sed -n -e 's/^[[:space:]]*\(make\)\?depends\(_x86_64\)\? = \([[:alnum:][:punct:]]*\)[[:space:]]*$/\3/p' /home/build/${{ matrix.package }}/.SRCINFO)
       - name: Build package
         id: build-package
         shell: bash
