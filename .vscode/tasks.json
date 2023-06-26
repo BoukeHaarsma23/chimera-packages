@@ -1,0 +1,35 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Make package",
+            "type": "shell",
+            "command": "docker run -it --rm --privileged=true -v ${input:selectDir}:/pkg -e SYNC_DATABASE=1 -e EXPORT_PKG=1 docker.io/whynothugo/makepkg:latest"
+        }
+    ],
+    "inputs": [
+        {
+          "id": "selectDir",
+          "type": "command",
+          "command": "extension.commandvariable.pickStringRemember",
+          "args": {
+            "description": "Which package",
+            "options": [
+              ["Use previous package", "${remember:srcSubDir}"],
+              ["Pick package", "${pickFile:srcSubDir}"]
+            ],
+            "default": null,
+            "pickFile": {
+              "srcSubDir": {
+                "description": "Which package?",
+                "include": "pkgs/**/{PKGBUILD}",
+                "showDirs": true,
+                "keyRemember": "srcSubDir"
+              }
+            }
+          }
+        }
+      ]
+}
