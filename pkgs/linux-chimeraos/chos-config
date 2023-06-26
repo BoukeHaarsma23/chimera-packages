@@ -2,6 +2,8 @@
 ## ChimeraOS customizations
 ##
 
+# Use steamdeck colors
+CONFIG_DRM_AMD_COLOR_STEAMDECK=y
 
 # PARAVIRT options have overhead, even on bare metal boots. They can cause
 # spinlocks to not be inlined as well. Either way, we don't intend to run this
