@@ -1,0 +1,57 @@
+name: Build packages
+on:
+  push:
+    branches: main
+  workflow_dispatch:
+
+jobs:
+  list:
+    runs-on: ubuntu-latest
+    outputs:
+      pkgs: ${{ steps.set-aur-pkgs.outputs.pkgs }}
+    steps:
+      - uses: actions/checkout@v3
+      - id: set-aur-pkgs
+        run: |
+          echo "pkgs=$(ls -d pkgs/*/ | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+        shell: bash
+
+  build:
+    needs:
+     - list
+    name: Build package
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        package: ${{ fromJson(needs.list.outputs.pkgs) }}
+    container: archlinux:base-devel
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Create build user
+        run: |
+          useradd -m build
+          cp -vR pkgs/${{ matrix.package }} /home/build/${{ matrix.package }}
+          chown -vR build /home/build/${{ matrix.package }}
+      - name: Set up pacman keyring
+        run: |
+          pacman-key --init
+          pacman-key --populate archlinux
+          mkdir -p /etc/gnupg && echo "auto-key-retrieve" >> /etc/gnupg/gpg.conf
+      - name: Generate .SRCINFO
+        run: |
+          su build bash -c "cd /home/build/${{ matrix.package }} makepkg --printsrcinfo > /home/build/${{ matrix.package }}/.SRCINFO"
+      - name: Install dependencies
+        shell: bash
+        run: |
+          pacman -Syu --noconfirm $(sed -n -e 's/^[[:space:]]*\(make\)\?depends\(_x86_64\)\? = \([[:alnum:][:punct:]]*\)[[:space:]]*$/\3/p' /home/build/${{ matrix.package }}/.SRCINFO)
+      - name: Build package
+        id: build-package
+        shell: bash
+        run: |
+          su build bash -c "cd /home/build/${{ matrix.package }} && MAKEFLAGS=-j$(nproc) makepkg"
+          . /home/build/${{ matrix.package }}/PKGBUILD
+          full_version=${pkgver}-${pkgrel}
+          echo $full_version
+  
