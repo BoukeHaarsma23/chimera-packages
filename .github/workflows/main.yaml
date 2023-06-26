@@ -88,7 +88,7 @@ jobs:
       - name: Make release
         uses: softprops/action-gh-release@v1
         with:
-          name: "linux-chimeraos-${{ needs.build-kernel.outputs.full_version }}"
+          name: Chimera OS Packages ${{ github.sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: true
           fail_on_unmatched_files: true
