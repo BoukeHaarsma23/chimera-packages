@@ -2,7 +2,7 @@
 # Maintainer: Joaquín I. Aramendía (samsagax) <samsagaxg@gmail.com>
 
 pkgbase=linux-chimeraos
-pkgver=6.3.9.chos2
+pkgver=6.3.9.chos3
 pkgrel=1
 pkgdesc='Linux ChimeraOS'
 _srctag=${pkgver%.*}
@@ -46,7 +46,23 @@ source=(
   0002-drm-panel-orientation-quirks-Add-quirk-for-AYA-NEO-F.patch
   0003-drm-panel-orientation-quirks-Add-quirk-for-AYA-NEO-G.patch
   0002-asus-ally-cs35l41-6.3.patch
-  0003-asus-ally-asus-hid-6.3.patch
+  0003-asus-ally-asus-hid-6.3-v2.patch
+  
+  # Wi-Fi patches and backports
+  0001-wifi-mt76-mt7921-introduce-mt7921_get_mac80211_ops-u.patch
+  0002-wifi-mt76-move-irq_tasklet-in-mt76_dev-struct.patch
+  0003-wifi-mt76-add-mt76_connac_irq_enable-utility-routine.patch
+  0004-wifi-mt76-get-rid-of-unused-sta_ps-callbacks.patch
+  0005-wifi-mt76-add-mt76_connac_gen_ppe_thresh-utility-rou.patch
+  0006-wifi-mt76-mt7921-get-rid-of-eeprom.h.patch
+  0007-wifi-mt76-move-shared-mac-definitions-in-mt76_connac.patch
+  0008-wifi-mt76-Replace-zero-length-array-with-flexible-ar.patch
+  0009-wifi-mt76-mt7921-Replace-fake-flex-arrays-with-flexi.patch
+  0010-wifi-mt76-mt7921-enable-p2p-support.patch
+  0011-wifi-mt76-mt7921e-fix-init-command-fail-with-enabled-device.patch
+  
+  # Asus Ally bluetooth patch
+  0004-asus-ally-bluetooth.patch
 
   #HDR patches
   0001-drm-connector-Drop-COLORIMETRY_NO_DATA.patch
@@ -117,16 +133,28 @@ validpgpkeys=(
   C7E7849466FE2358343588377258734B41C31549  # David Runge <dvzrv@archlinux.org>
 )
 b2sums=('8f2f75272d5d2a23c6694dffa2a20260310b5b958dbaf27c5bf74ce679cd929493116ff01e94444c3f891147869d09e9dee111cb52a04a8957ae5c8d94b4ee71'
-        '10f3d6c5c45bdd49b8863f3fb824404f89625c8be4633dce13ae20cd67c542114f73e30b9d09c5365a1728e0ae411f287610d064f3f9039635162191af3292bb'
-        'b990b4efb1991a9708cce8016933646e339a92eafa20387479e5f9fff442e6574698681604e796d7a9c15fcea4ab676de51b922bd0eedce86c2ab0f54ee784b2'
+        'f8d423664a704439e4b34925c8c0a497de22c442cfcaed8da2ad5095c70433703f56acbd3a56b9169454dbaca215c443e662d69197babb3e01f2d224452f08df'
+        'ba1fcbf72df6877db250a8077993d542508a1f651092abbe0a4ccbe34a1b971e200860decb7c4df87e133d0384c0e761036ab54608df46fca93366c50c85002f'
         'e631bc9c61376a4c08054408407683617da2625a1ad9075ab1a67e5d9352e1473eb2dbee6ba62c97e11a40c85e041cd0ffeb809cd2e5684b129194d341089c4e'
         '239d01bd6fefb4f1b569ffa991c5a78351b85925aca73384c5e93386d104f89a754fde5f1df66aebc0ede286d04a7abb8be3f44a4fa114930f41bf75e9ba3632'
-        '9f2e9c718dbd2710c5d83177a744f7969605a9db968ffb8a1762ea4fc419761f06eb26011a04fb565db021cae34799b73047e4f30bb30b6f9fa05d42d6d24aee'
+        'e27e85b81ba39241328cfd1a48a7d6bcf1c94e7d0159a4afd31d644bd1f9595537b06dfdcd6f4f175051782f03b1b282ab56766d3f2f6acf14eaa81cb98239e2'
         '0aabd614b3318880fe940d4f3eb93f8b7f0e91892864f95d5b12eabfce1650ef036bf4e2ccee8b391c8a3cef4ff1ff7661b118a4f72d82214dbf713743809f78'
         '5a578620cc03574218a22c1eebbba91047815f0c7b0b3f2f3d1eb5534aa17254f0ea5f061cadfe7bbe3b32f0a20b2008e28a494cfd7be84600c4b6a89afd6940'
         '4f8305d7b15763206e868d313b31372cc7e0df1b634d73f958d3c357c6859fd26e9490d0179f316b282b4058baae5365f5735eae157cceaa1a3acd7ee5e8d1c6'
         '1c9cc5f309299f909478bae80758640ae09337a714da7d9d023a795b4dfc7569e760593c53c4948ebaac835c0cde5fde58776fb69b8d68a4c2f61ce96bb4c996'
-        '6c53217d09782a585a2aa4fc75230c750893796fd2c1fa61443a87b8456a7385f74908e310910702c78012ab3c75a43dad75d3f22a2f0cc94529f305db3a11aa'
+        '34813c39b3c367ece09860b213744dfb7f2e78a8ff1f398765d2ad1c265d691ccf7e030bb21fc5acbe3141c5931775fa260026e86f3aa26331326e48f5c7452b'
+        '9afc35bbceec6c5fe0d28ef31aa1e3dbede5851d89560127216360476b412ea669d55acde86f75563497f40272256b09198cb60cc7eccea2fda975f015da4c3c'
+        '71966df1580d2efdd705dcfab85a2d406b1096bfdf3f565fd33331d25f004cd43361c27e408a5538046d587b1ac459fb8fd540075f8c9ce0642ba11014becd83'
+        '54e3013018ad7cfb511efd1b886ca6fa74a7b6c2dfacaaa4c1fbc41f4d9a295dbdac7d2dcbacf6795f4a3caf8c1a117a191767876df0553612a64994554b4065'
+        '4cea85874b65ab428c1e665000a393d3ea64f621eac52275ac78686045304dd07bdd44112ae770b8f211d1c2bc0f7f094d6eca4fa2af007ef5e4a03e57637a71'
+        '829a90edf9d15a42c99d85064b4d6616f8a4728bf6a12577e94395814fe4df1693484761455bfa987c9f3eac0605ba4caad210fe85fa3125f73a65b0922ef8ea'
+        'b27cbde5e57d3aef09fb9400eb156bd88800e31f458f23c99d08762ad34cb8ca3e151725db4cd375ac5a82630d1352eec0101be0cbfd0cc7a2c76a2966c0e717'
+        '60dff56d8a0f2784b46383379e11ba95dca195cf30d370b00d194038de8cb9036d28bbafbbcf43bc59d48238030bb80694845245759741b860337b328aa456e5'
+        'e6e454b773b70ab8c02d9c9436f46a26209184d963754fdce51227cf0d84cde505a3105805fa250d3ab8127cfee98c8e8229dea39006b500eeac90aa0b5ffd7f'
+        '569a17276f864de341c84b972eef8a3d7ff7e1a4dd12dc98907e3c28b226445a3097d75b534ba5a715315d344b6ecba9a05d5df99cbccec0d28c2cf3ebd9e5bd'
+        '161c0c385a2c6d6313ca8fcec9468080e98a8c9d41a1af7a93486a309bb3f98c549bdd0be8b4f707f814c01711e0f0f844a3f357c38734c0e1c35f6bf706b66d'
+        'f97dd9021d5095f75d20cf53b6cd3c6bb017debc0525b5bc5d179557ddc8273050f177f12f95ab211aeada5924b76a21062c0ca0892c00a9e1eabd21bda3981e'
+        '41162c86f54fcdf7dfbe575e23f8bde4efa8886b5db311945e03bccb353286e70f6e4e83aadc5e81102cfcb8cf1ddab31cbbe016df4237abc07e7a69bc8e5c52'
         'e7cf194d037aa0229cfed0f6b360b7fd276a44b82aafe1990410448e8fe753e600466d70cd208bd1c33a8018095df795649b21fe57b85f9c9337222d04b33e21'
         '8eb7cec722e4ecae4c5322b0baec04c6aef05c05ded1ae894df04b7e0730112e2ab5d2c152ec0e31c0f496604a88646d8d5de28674ef405cb014b20b550b66a0'
         '5e42e4788a4bdba1a5db900924224c35efcb3cf45ae6112840584a22cabb4d05d0c3ee14a75b555cd50bd5127069a8c518a9bffc7b9324909ed166b44092ce0c'
@@ -185,7 +213,8 @@ b2sums=('8f2f75272d5d2a23c6694dffa2a20260310b5b958dbaf27c5bf74ce679cd929493116ff
         '71843812c5e8ef8d18ddf177e277fb6aa7a78168b2924fbd7c4deaaff4aad998083a7a06b27ac23379ccf102546aa1353e2c9bb47c77483ff8ae42057d25be49'
         '1d7ffb0cd6ab9cbdea7bd47c941b5dd6e289c3584d02e13234c7c5d760a90fc4ae5aa673aaaa058b145871084bb2e932c4166241dd2cc1c68341fc32930ee953'
         'e319c6075ed7cb910ea6ea114aae951ba130eaa15d10b4741a61cfa69381553a1c8ee8991d5900ef366c9538bf15e403841e9d580a8ea573bab58ecf86989172'
-        'bdbd01b94a1139897af4453537b607cedff10fbb87257ce40f9ee02362059a8117e22433b01286b0ad5c420f2a204b78eb2f8779f7a4f7ccf16ceb0271e33abe')
+        'bdbd01b94a1139897af4453537b607cedff10fbb87257ce40f9ee02362059a8117e22433b01286b0ad5c420f2a204b78eb2f8779f7a4f7ccf16ceb0271e33abe'
+)
 
 export KBUILD_BUILD_HOST=archlinux
 export KBUILD_BUILD_USER=$pkgbase
@@ -217,8 +246,7 @@ prepare() {
   done
 
   echo "Setting config..."
-  scripts/kconfig/merge_config.sh -m ../config ../htpc-config
-  scripts/kconfig/merge_config.sh -m .config ../chos-config
+  scripts/kconfig/merge_config.sh -m ../config ../chos-config
   _make olddefconfig
   diff -u ../config .config || :
 
@@ -227,7 +255,7 @@ prepare() {
 
 build() {
   cd $_srcname
-  _make -j16 all
+  _make all
 }
 
 _package() {
