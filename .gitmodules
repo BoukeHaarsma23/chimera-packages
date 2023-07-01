@@ -1,6 +1,0 @@
-[submodule "pkgs/lib32-mesa"]
-	path = pkgs/lib32-mesa
-	url = https://gitlab.archlinux.org/archlinux/packaging/packages/lib32-mesa.git
-[submodule "pkgs/mesa"]
-	path = pkgs/mesa
-	url = https://gitlab.archlinux.org/archlinux/packaging/packages/mesa.git
